@@ -9,6 +9,7 @@ const profileSchema = v.object({
   fullName: v.string(),
   email: v.string(),
   phone: v.string(),
+  userId: v.optional(v.id("users")),
 });
 
 export default defineSchema({
@@ -19,7 +20,6 @@ export default defineSchema({
     role: v.union(v.literal("manager"), v.literal("teacher")),
   }),
 
-  // ✅ Remove `profile` table. We're embedding the profile directly.
   students: defineTable({
     profile: profileSchema,
     age: v.number(),
