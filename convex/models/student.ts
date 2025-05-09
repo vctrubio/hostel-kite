@@ -2,7 +2,6 @@ import { query, mutation } from "../_generated/server";
 import { v } from "convex/values";
 import { studentSchemaFields } from "../schemaFields";
 
-// Create a new student
 export const create = mutation({
   args: studentSchemaFields,
   handler: async (ctx, args) => {
@@ -15,7 +14,6 @@ export const create = mutation({
   },
 });
 
-// Get all students
 export const get = query({
   handler: async (ctx) => {
     const students = await ctx.db.query("students").collect();
@@ -23,7 +21,6 @@ export const get = query({
   },
 });
 
-// Get a specific student by ID
 export const getById = query({
   args: { id: v.id("students") },
   handler: async (ctx, args) => {
@@ -31,7 +28,6 @@ export const getById = query({
   },
 });
 
-// Update a student by ID
 export const updateId = mutation({
   args: {
     id: v.id("students"),
@@ -47,7 +43,6 @@ export const updateId = mutation({
   },
 });
 
-// Delete a student by ID
 export const deleteId = mutation({
   args: { id: v.id("students") },
   handler: async (ctx, args) => {

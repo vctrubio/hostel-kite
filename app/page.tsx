@@ -8,6 +8,8 @@ import StudentList from "@/components/list/studentList";
 import UserList from "@/components/list/userList";
 
 export default function Home() {
+  const { viewer } = useQuery(api.models.users.getViewer) ?? {};
+
   return (
     <>
       <Navbar />
@@ -15,6 +17,11 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-center">
           The Kite Hostel Management App2
         </h1>
+        {viewer !== undefined ? (
+          <p className="text-center text-xl">Welcome, {viewer ?? "Anonymous"}!</p>
+        ) : (
+          <p className="text-center">Loading user info...</p>
+        )}
         <Content />
       </main>
     </>
@@ -33,16 +40,11 @@ function Content() {
   }
 
   return (
-    <div className="flex flex-col gap-8 max-w-6xl mx-auto">
+    <div className="flex mx-auto gap-8">
       <UserList />
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Student Form */}
-        <div>
-          <StudentForm />
-        </div>
 
-        {/* Students List */}
+      <div className="flex gap-2">
+          <StudentForm />
         <StudentList />
       </div>
     </div>

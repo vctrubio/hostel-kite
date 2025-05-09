@@ -2,10 +2,33 @@
 
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useState, useEffect, useMemo } from "react";
+import UserCard from "../card/userCard";
 
 export default function UserList() {
   const userData = useQuery(api.models.users.getUserData);
   const { viewer } = useQuery(api.models.users.getViewer) ?? {};
+  const usersQuery = useQuery(api.models.users.get);
+  const users = useMemo(() => usersQuery || [], [usersQuery]);
+
+  // Try to get user categories from isActive query
+  let adminUsers: any[] = [];
+  let studentUsers: any[] = [];
+  let teacherUsers: any[] = [];
+  let inactiveUsers: any[] = [];
+  
+  try {
+    const userCategories = useQuery(api.models.users.isActive);
+    
+    if (userCategories) {
+      adminUsers = userCategories.admins || [];
+      studentUsers = userCategories.students || [];
+      teacherUsers = userCategories.teachers || [];
+      inactiveUsers = userCategories.inactive || [];
+    }
+  } catch (error) {
+    // Fall back to showing all users if isActive isn't available
+  }
 
   return (
     <div className="p-6 rounded-lg border">
@@ -13,15 +36,97 @@ export default function UserList() {
       <p className="text-xl mb-4">Welcome {viewer ?? "Anonymous"}!</p>
       
       {userData ? (
-        <div className="mt-4">
-          <h3 className="text-xl font-semibold mb-2">User Data:</h3>
+        <div className="mt-4 mb-6">
+          <h3 className="text-xl font-semibold mb-2">Current User Data:</h3>
           <pre className="p-4 border rounded-md overflow-auto">
             {JSON.stringify(userData, null, 2)}
           </pre>
         </div>
       ) : (
-        <p>No user data available</p>
+        <p className="mb-6">No user data available</p>
       )}
+
+      <div className="mt-8">
+        <h3 className="text-xl font-semibold mb-6">All Users</h3>
+        
+        {(!adminUsers.length && !studentUsers.length && !teacherUsers.length && !inactiveUsers.length && !users.length) ? (
+          <p className="text-gray-500">No users found.</p>
+        ) : (
+          <div className="space-y-8">
+            {/* Admin Users Section */}
+            {adminUsers.length > 0 && (
+              <div>
+                <h4 className="text-lg font-medium mb-3 flex items-center">
+                  <span className="w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
+                  Admin Users ({adminUsers.length})
+                </h4>
+                <div className="space-y-3">
+                  {adminUsers.map((user) => (
+                    <UserCard key={user._id} user={user} role="admin" />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Teacher Users Section */}
+            {teacherUsers.length > 0 && (
+              <div>
+                <h4 className="text-lg font-medium mb-3 flex items-center">
+                  <span className="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                  Teacher Users ({teacherUsers.length})
+                </h4>
+                <div className="space-y-3">
+                  {teacherUsers.map((user) => (
+                    <UserCard key={user._id} user={user} role="teacher" />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Student Users Section */}
+            {studentUsers.length > 0 && (
+              <div>
+                <h4 className="text-lg font-medium mb-3 flex items-center">
+                  <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                  Student Users ({studentUsers.length})
+                </h4>
+                <div className="space-y-3">
+                  {studentUsers.map((user) => (
+                    <UserCard key={user._id} user={user} role="student" />
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Inactive Users Section */}
+            {inactiveUsers.length > 0 ? (
+              <div>
+                <h4 className="text-lg font-medium mb-3 flex items-center">
+                  <span className="w-3 h-3 bg-gray-400 rounded-full mr-2"></span>
+                  Inactive Users ({inactiveUsers.length})
+                </h4>
+                <div className="space-y-3">
+                  {inactiveUsers.map((user) => (
+                    <UserCard key={user._id} user={user} role="inactive" />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              // Fallback if isActive isn't working yet - show all users
+              !(adminUsers.length || studentUsers.length || teacherUsers.length) && users.length > 0 && (
+                <div>
+                  <h4 className="text-lg font-medium mb-3">All Users ({users.length})</h4>
+                  <div className="space-y-3">
+                    {users.map((user) => (
+                      <UserCard key={user._id} user={user} />
+                    ))}
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
