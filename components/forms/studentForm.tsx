@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
+// studentSchemaFields from "../../convex/schemaFields";
 type FormData = {
   fullName: string;
   email: string;

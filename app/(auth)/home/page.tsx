@@ -27,29 +27,11 @@ export default function HomePage() {
         )}
       </header>
 
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/3">
-          <h2 className="text-xl font-semibold mb-4">Users</h2>
-          <div className="border rounded-md">
-            <UserList />
-          </div>
-        </div>
-
-        <div className="w-full md:w-2/3">
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="w-full lg:w-1/2">
-              <h2 className="text-xl font-semibold mb-4">Add Student</h2>
-              <div className="border rounded-md p-4">
-                <StudentForm />
-              </div>
-            </div>
-            <div className="w-full lg:w-1/2">
-              <h2 className="text-xl font-semibold mb-4">Students</h2>
-              <div className="border rounded-md">
-                <StudentList />
-              </div>
-            </div>
-          </div>
+      <div className="flex gap-8">
+        <UserList />
+        <div className="flex gap-4">
+          <StudentForm />
+          <StudentList />
         </div>
       </div>
     </div>
