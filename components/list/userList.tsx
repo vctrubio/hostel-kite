@@ -32,39 +32,25 @@ export default function UserList() {
 
   return (
     <div className="p-6 rounded-lg border">
-      <h2 className="text-2xl font-bold mb-6">User Information</h2>
-      <p className="text-xl mb-4">Welcome {viewer ?? "Anonymous"}!</p>
-      
-      {userData ? (
-        <div className="mt-4 mb-6">
-          <h3 className="text-xl font-semibold mb-2">Current User Data:</h3>
-          <pre className="p-4 border rounded-md overflow-auto">
-            {JSON.stringify(userData, null, 2)}
-          </pre>
-          
-          {/* User Categories Count */}
-          <div className="mt-4 grid grid-cols-4 gap-3">
-            <div className="p-3 border-2 border-purple-500 rounded-md text-center">
-              <span className="block font-medium">Admin</span>
-              <span className="text-lg">{adminUsers.length}</span>
-            </div>
-            <div className="p-3 border-2 border-green-500 rounded-md text-center">
-              <span className="block font-medium">Teacher</span>
-              <span className="text-lg">{teacherUsers.length}</span>
-            </div>
-            <div className="p-3 border-2 border-blue-500 rounded-md text-center">
-              <span className="block font-medium">Student</span>
-              <span className="text-lg">{studentUsers.length}</span>
-            </div>
-            <div className="p-3 border-2 border-gray-400 rounded-md text-center">
-              <span className="block font-medium">Inactive</span>
-              <span className="text-lg">{inactiveUsers.length}</span>
-            </div>
-          </div>
+      {/* User Categories Count */}
+      <div className="mt-4 grid grid-cols-4 gap-3">
+        <div className="p-3 border-2 border-purple-500 rounded-md text-center">
+          <span className="block font-medium">Admin</span>
+          <span className="text-lg">{adminUsers.length}</span>
         </div>
-      ) : (
-        <p className="mb-6">No user data available</p>
-      )}
+        <div className="p-3 border-2 border-green-500 rounded-md text-center">
+          <span className="block font-medium">Teacher</span>
+          <span className="text-lg">{teacherUsers.length}</span>
+        </div>
+        <div className="p-3 border-2 border-blue-500 rounded-md text-center">
+          <span className="block font-medium">Student</span>
+          <span className="text-lg">{studentUsers.length}</span>
+        </div>
+        <div className="p-3 border-2 border-gray-400 rounded-md text-center">
+          <span className="block font-medium">Inactive</span>
+          <span className="text-lg">{inactiveUsers.length}</span>
+        </div>
+      </div>
 
       <div className="mt-8">
         {(!adminUsers.length && !studentUsers.length && !teacherUsers.length && !inactiveUsers.length && !users.length) ? (
@@ -74,6 +60,9 @@ export default function UserList() {
             {/* Admin Users Section */}
             {adminUsers.length > 0 && (
               <div>
+                <h3 className="text-xl font-semibold mb-3 text-purple-700 border-b pb-2">
+                  Administrators ({adminUsers.length})
+                </h3>
                 <div className="space-y-3">
                   {adminUsers.map((user) => (
                     <UserCard key={user._id} user={user} role="admin" />
@@ -85,6 +74,9 @@ export default function UserList() {
             {/* Teacher Users Section */}
             {teacherUsers.length > 0 && (
               <div>
+                <h3 className="text-xl font-semibold mb-3 text-green-700 border-b pb-2">
+                  Teachers ({teacherUsers.length})
+                </h3>
                 <div className="space-y-3">
                   {teacherUsers.map((user) => (
                     <UserCard key={user._id} user={user} role="teacher" />
@@ -96,6 +88,9 @@ export default function UserList() {
             {/* Student Users Section */}
             {studentUsers.length > 0 && (
               <div>
+                <h3 className="text-xl font-semibold mb-3 text-blue-700 border-b pb-2">
+                  Students ({studentUsers.length})
+                </h3>
                 <div className="space-y-3">
                   {studentUsers.map((user) => (
                     <UserCard key={user._id} user={user} role="student" />
@@ -104,9 +99,12 @@ export default function UserList() {
               </div>
             )}
             
-            {/* Inactive Users Section */}
+            {/* User Account Activity Section */}
             {inactiveUsers.length > 0 ? (
               <div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-700 border-b pb-2">
+                  User Account Activity ({inactiveUsers.length})
+                </h3>
                 <div className="space-y-3">
                   {inactiveUsers.map((user) => (
                     <UserCard key={user._id} user={user} role="inactive" />

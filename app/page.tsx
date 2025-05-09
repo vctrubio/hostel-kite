@@ -3,50 +3,56 @@
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import Navbar from "@/components/Navbar";
-import StudentForm from "@/components/forms/studentForm";
-import StudentList from "@/components/list/studentList";
-import UserList from "@/components/list/userList";
+import Link from "next/link";
 
 export default function Home() {
+  const userData = useQuery(api.models.users.getUserData);
   const { viewer } = useQuery(api.models.users.getViewer) ?? {};
+  
+  // Navigation links
+  const navLinks = [
+    { title: "Home", href: "/home" },
+    { title: "Student", href: "/student" },
+    { title: "Teacher", href: "/teacher" },
+    // { title: "Packages", href: "/packages" },
+    // { title: "Instructors", href: "/instructors" },
+    // { title: "Forecast", href: "/forecast" },
+  ];
 
   return (
     <>
       <Navbar />
       <main className="p-8 flex flex-col gap-8">
-        <h1 className="text-4xl font-bold text-center">
-          The Kite Hostel Management App2
-        </h1>
+       
         {viewer !== undefined ? (
-          <p className="text-center text-xl">Welcome, {viewer ?? "Anonymous"}!</p>
+          <div className="text-center">
+            <p className="text-xl mb-2">Welcome, {viewer ?? "Anonymous"}!</p>
+            {userData && (
+              <p className="mb-6">Your role: <span className="font-medium">{userData.role || "Not assigned"}</span></p>
+            )}
+          </div>
         ) : (
           <p className="text-center">Loading user info...</p>
         )}
-        <Content />
+        
+        <section className="max-w-4xl mx-auto">
+
+          <nav className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Quick Navigation</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {navLinks.map((link, index) => (
+                <Link 
+                  key={index} 
+                  href={link.href} 
+                  className="p-3 border rounded-md text-center hover:bg-gray-50 transition-colors"
+                >
+                  {link.title}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        </section>
       </main>
     </>
-  );
-}
-
-function Content() {
-  const { viewer } = useQuery(api.models.users.getViewer) ?? {};
-
-  if (viewer === undefined) {
-    return (
-      <div className="mx-auto">
-        <p>loading... (consider a loading skeleton)</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex mx-auto gap-8">
-      <UserList />
-
-      <div className="flex gap-2">
-          <StudentForm />
-        <StudentList />
-      </div>
-    </div>
   );
 }
