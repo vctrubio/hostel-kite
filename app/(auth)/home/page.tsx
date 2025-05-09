@@ -5,6 +5,8 @@ import { api } from "../../../convex/_generated/api";
 import UserList from "@/components/list/userList";
 import StudentForm from "@/components/forms/studentForm";
 import StudentList from "@/components/list/studentList";
+import TeacherForm from "@/components/forms/teacherForm";
+import TeacherList from "@/components/list/teacherList";
 
 export default function HomePage() {
   const { viewer } = useQuery(api.models.users.getViewer) ?? {};
@@ -27,11 +29,21 @@ export default function HomePage() {
         )}
       </header>
 
-      <div className="flex gap-8">
+      <div className="flex flex-col gap-8">
         <UserList />
-        <div className="flex gap-4">
-          <StudentForm />
-          <StudentList />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-6">
+            <h2 className="text-2xl font-bold">Students</h2>
+            <StudentForm />
+            <StudentList />
+          </div>
+          
+          <div className="flex flex-col gap-6">
+            <h2 className="text-2xl font-bold">Teachers</h2>
+            <TeacherForm />
+            <TeacherList />
+          </div>
         </div>
       </div>
     </div>
