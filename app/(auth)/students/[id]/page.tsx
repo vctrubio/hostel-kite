@@ -6,6 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
+import VerificationBadge from "@/components/ui/VerificationBadge";
 
 export default function StudentDetailPage({ params }: { params: { id: string } }) {
   // Unwrap params using React.use()
@@ -41,7 +42,10 @@ export default function StudentDetailPage({ params }: { params: { id: string } }
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">Student Data</h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-bold">Student Data</h1>
+            <VerificationBadge isVerified={!!student.userId} />
+          </div>
           <pre className="bg-gray-100 p-4 rounded-md overflow-auto">
             {JSON.stringify(student, null, 2)}
           </pre>

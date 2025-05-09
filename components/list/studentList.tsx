@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import VerificationBadge from "@/components/ui/VerificationBadge";
 
 export default function StudentList() {
   const students = useQuery(api.models.student.get) || [];
@@ -20,9 +21,12 @@ export default function StudentList() {
               <div 
                 className="border rounded-md p-4 hover:bg-gray-100 cursor-pointer"
               >
-                <h3 className="font-bold text-lg">
-                  {student.fullName || "Unnamed Student"}
-                </h3>
+                <div className="flex justify-between items-start">
+                  <h3 className="font-bold text-lg">
+                    {student.fullName || "Unnamed Student"}
+                  </h3>
+                  <VerificationBadge isVerified={!!student.userId} size="sm" />
+                </div>
                 <p className="text-sm text-gray-600">Age: {student.age}</p>
                 
                 {student.email && (

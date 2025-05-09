@@ -3,6 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
+import VerificationBadge from "@/components/ui/VerificationBadge";
 
 export default function TeacherList() {
   const teachers = useQuery(api.models.teacher.get) || [];
@@ -26,9 +27,12 @@ export default function TeacherList() {
           {teachers.map((teacher) => (
             <Link href={`/teachers/${teacher._id}`} key={teacher._id}>
               <div className="border rounded-md p-4 hover:bg-gray-100 cursor-pointer">
-                <h3 className="font-bold text-lg">
-                  {teacher.fullName || "Unnamed Teacher"}
-                </h3>
+                <div className="flex justify-between items-start">
+                  <h3 className="font-bold text-lg">
+                    {teacher.fullName || "Unnamed Teacher"}
+                  </h3>
+                  <VerificationBadge isVerified={!!teacher.userId} size="sm" />
+                </div>
                 
                 {teacher.email && (
                   <p className="text-sm">Email: {teacher.email}</p>
