@@ -31,7 +31,42 @@ export const getUserData = query({
     }
     const user = await ctx.db.get(userId);
     
-    return user;
+    if (!user) {
+      return { userData: null };
+    }
+    
+    // Determine the user's role
+    let role = null;
+    
+    // Check if admin
+    const admin = await ctx.db.query("admins")
+      .filter(q => q.eq(q.field("userId"), userId))
+      .first();
+    if (admin) {
+      role = "admin";
+    } else {
+      // Check if student
+      const student = await ctx.db.query("students")
+        .filter(q => q.eq(q.field("userId"), userId))
+        .first();
+      if (student) {
+        role = "student";
+      } else {
+        // Check if teacher
+        const teacher = await ctx.db.query("teachers")
+          .filter(q => q.eq(q.field("userId"), userId))
+          .first();
+        if (teacher) {
+          role = "teacher";
+        }
+      }
+    }
+    
+    // Return user data with role
+    return {
+      ...user,
+      role
+    };
   },
 });
 
