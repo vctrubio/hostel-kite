@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
+import type * as models_admin from "../models/admin.js";
 import type * as models_student from "../models/student.js";
 import type * as models_users from "../models/users.js";
 import type * as schemaFields from "../schemaFields.js";
@@ -30,6 +31,7 @@ import type * as schemaFields from "../schemaFields.js";
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
+  "models/admin": typeof models_admin;
   "models/student": typeof models_student;
   "models/users": typeof models_users;
   schemaFields: typeof schemaFields;
