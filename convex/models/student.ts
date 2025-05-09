@@ -1,21 +1,56 @@
 import { query, mutation } from "../_generated/server";
+import { v } from "convex/values";
 import { studentSchemaFields } from "../schemaFields";
 
-// Function to create a new student
-export const createStudent = mutation({
+// Create a new student
+export const create = mutation({
   args: studentSchemaFields,
   handler: async (ctx, args) => {
+    const { age, ...profileFields } = args;
+    
     return await ctx.db.insert("students", {
-      profile: args.profile,
-      age: args.age,
+      ...profileFields,
+      age,
     });
   },
 });
 
-// Function to list all students
-export const listStudents = query({
+// Get all students
+export const get = query({
   handler: async (ctx) => {
     const students = await ctx.db.query("students").collect();
     return students;
+  },
+});
+
+// Get a specific student by ID
+export const getById = query({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.id);
+  },
+});
+
+// Update a student by ID
+export const updateId = mutation({
+  args: {
+    id: v.id("students"),
+    ...studentSchemaFields,
+  },
+  handler: async (ctx, args) => {
+    const { id, age, ...profileFields } = args;
+    
+    return await ctx.db.patch(id, {
+      ...profileFields,
+      age,
+    });
+  },
+});
+
+// Delete a student by ID
+export const deleteId = mutation({
+  args: { id: v.id("students") },
+  handler: async (ctx, args) => {
+    return await ctx.db.delete(args.id);
   },
 });

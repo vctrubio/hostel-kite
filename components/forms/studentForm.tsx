@@ -13,7 +13,7 @@ type FormData = {
 };
 
 export default function StudentForm() {
-  const createStudent = useMutation(api.models.student.createStudent);
+  const createStudent = useMutation(api.models.student.create);
 
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
@@ -49,13 +49,12 @@ export default function StudentForm() {
     setIsSubmitting(true);
     
     try {
+      // New spread structure for creating a student
       await createStudent({
-        profile: {
-          fullName: formData.fullName,
-          email: formData.email || undefined,
-          phone: formData.phone || undefined,
-          languages: formData.languages as ("English" | "Spanish" | "French")[],
-        },
+        fullName: formData.fullName,
+        email: formData.email || undefined,
+        phone: formData.phone || undefined,
+        languages: formData.languages as ("English" | "Spanish" | "French")[],
         age: formData.age
       });
       
