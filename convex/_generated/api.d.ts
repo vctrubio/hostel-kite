@@ -15,7 +15,9 @@ import type {
 } from "convex/server";
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
-import type * as models_user from "../models/user.js";
+import type * as models_student from "../models/student.js";
+import type * as models_users from "../models/users.js";
+import type * as schemaFields from "../schemaFields.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -28,7 +30,9 @@ import type * as models_user from "../models/user.js";
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
-  "models/user": typeof models_user;
+  "models/student": typeof models_student;
+  "models/users": typeof models_users;
+  schemaFields: typeof schemaFields;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
