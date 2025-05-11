@@ -20,6 +20,7 @@ import type * as models_student from "../models/student.js";
 import type * as models_teacher from "../models/teacher.js";
 import type * as models_users from "../models/users.js";
 import type * as schemaFields from "../schemaFields.js";
+import type * as utils from "../utils.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   "models/teacher": typeof models_teacher;
   "models/users": typeof models_users;
   schemaFields: typeof schemaFields;
+  utils: typeof utils;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

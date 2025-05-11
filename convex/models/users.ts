@@ -70,6 +70,7 @@ export const getUserData = query({
   },
 });
 
+
 // Get all users
 export const get = query({
   handler: async (ctx) => {
