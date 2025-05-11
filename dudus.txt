@@ -1,2 +1,2 @@
-1. where are we []?
+1. where are we []? -- setting up admin 101s
 2. set middleware for roles

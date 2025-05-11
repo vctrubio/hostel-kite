@@ -54,6 +54,57 @@ export const linkStudentAccount = mutation({
 });
 
 /**
+ * Link a teacher account to a user account
+ * 
+ * This function will:
+ * - Verify that the provided ID is for a teacher
+ * - Check if the teacher already has a userId assigned
+ * - Update the teacher's profile to include the userId
+ */
+export const linkTeacherAccount = mutation({
+  args: {
+    teacherId: v.id("teachers"),
+    userId: v.id("users")
+  },
+  handler: async (ctx, args) => {
+    const { teacherId, userId } = args;
+    
+    // Verify teacher exists
+    const teacher = await ctx.db.get(teacherId);
+    if (!teacher) {
+      throw new Error(`Teacher with ID ${teacherId} not found`);
+    }
+    
+    // Check if teacher already has a userId assigned
+    if (teacher.userId) {
+      throw new Error(`Teacher with ID ${teacherId} is already linked to user ID ${teacher.userId}`);
+    }
+    
+    // Verify user exists
+    const user = await ctx.db.get(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    // Check if this user is already linked to another teacher
+    const existingTeacher = await ctx.db.query("teachers")
+      .filter(q => q.eq(q.field("userId"), userId))
+      .first();
+    
+    if (existingTeacher) {
+      throw new Error(`User with ID ${userId} is already linked to another teacher with ID ${existingTeacher._id}`);
+    }
+    
+    // Update the teacher record with the userId
+    await ctx.db.patch(teacherId, {
+      userId: userId
+    });
+    
+    return { success: true, teacherId, userId };
+  }
+});
+
+/**
  * Create a new admin entry with manager role for a user
  * 
  * This function will:
