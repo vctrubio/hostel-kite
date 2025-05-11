@@ -1,2 +1,13 @@
 1. where are we []? -- setting up admin 101s
 2. set middleware for roles
+
+
+--- thikn --- 
+
+i want to call user.role and see if he is a, b, c or d
+a = admin
+b = student
+c = teacher
+d = guest
+
+but how do i store this data

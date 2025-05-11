@@ -9,7 +9,7 @@ export default function AuthLayout({
   return (
     <div className="">
         <div>auth</div>
-        {/* <Navbar/> */}
+        <Navbar/>
         {children}
     </div>
   );
