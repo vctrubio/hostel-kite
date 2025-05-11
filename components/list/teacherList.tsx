@@ -3,7 +3,7 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
-import VerificationBadge from "@/components/ui/VerificationBadge";
+import VerificationBadge from "@/components/custom/VerificationBadge";
 
 export default function TeacherList() {
   const teachers = useQuery(api.models.teacher.get) || [];

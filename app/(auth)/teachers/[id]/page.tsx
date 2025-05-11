@@ -6,7 +6,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
-import VerificationBadge from "@/components/ui/VerificationBadge";
+import VerificationBadge from "@/components/custom/VerificationBadge";
 
 export default function TeacherDetailPage({ params }: { params: { id: string } }) {
   // Unwrap params using React.use()
