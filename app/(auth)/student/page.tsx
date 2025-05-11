@@ -5,17 +5,14 @@ import { api } from "../../../convex/_generated/api";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useRoleValidation } from "@/components/RedirectTmpClient";
 
 export default function StudentPage() {
   const router = useRouter();
   const userData = useQuery(api.models.users.getUserData);
   
-  // Redirect if user is not logged in or not a student
-  useEffect(() => {
-    if (userData && 'role' in userData && userData.role !== "student") {
-      router.push("/");
-    }
-  }, [userData, router]);
+  // Use the role validation hook to handle redirects
+  useRoleValidation(userData, "student");
 
   if (!userData) {
     return (
@@ -36,7 +33,6 @@ export default function StudentPage() {
 
   return (
     <>
-      <Navbar />
       <main className="p-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white shadow-lg rounded-lg overflow-hidden">

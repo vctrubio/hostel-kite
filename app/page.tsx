@@ -4,20 +4,34 @@ import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import { useEffect } from "react";
+import { adminSchemaFields } from "@/convex/schemaFields";
+import { useRouter } from "next/navigation";
+import { redirectRole } from "@/components/RedirectTmpClient";
 
 export default function Home() {
   const userData = useQuery(api.models.users.getUserData);
   const { viewer } = useQuery(api.models.users.getViewer) ?? {};
+  const router = useRouter();
   
   // Navigation links
   const navLinks = [
-    { title: "Home", href: "/home" },
+    { title: "Admin", href: "/admin" },
     { title: "Student", href: "/student" },
     { title: "Teacher", href: "/teacher" },
     // { title: "Packages", href: "/packages" },
     // { title: "Instructors", href: "/instructors" },
     // { title: "Forecast", href: "/forecast" },
   ];
+
+  useEffect(() => {
+    if (userData?.role) {
+      console.log('we have a role:', userData.role);
+      redirectRole(userData.role, router);
+    } else {
+      console.log('no role found');
+    }
+  }, [userData, router]);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query } from "./_generated/server";
+import { action, query } from "./_generated/server";
 
 export const getId = query({
   args: { id: v.string() },
@@ -14,3 +14,12 @@ export const getId = query({
     }
   },
 });
+
+export const myFt = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    return identity;
+  },
+})
+
