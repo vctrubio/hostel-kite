@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { redirectRole } from "@/components/RedirectTmpClient";
+import { AuthRoles } from "@/components/matching/authRoles";
 
 // Navigation component
 const NavLinks = ({ links }: { links: { title: string; href: string }[] }) => {
@@ -80,6 +81,16 @@ export default function Home() {
           </ul>
         </div>
 
+        <div className="mx-auto border p-4 rounded-md">
+          <div>Intent to make matchmaking</div>
+          {userData && (
+            <div className="space-y-4">
+              <AuthRoles userId={userData._id} userRole="admin" />
+              <AuthRoles userId={userData._id} userRole="student" />
+              <AuthRoles userId={userData._id} userRole="teacher" />
+            </div>
+          )}
+        </div>
       </main>
     </>
   );
