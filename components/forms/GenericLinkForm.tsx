@@ -19,8 +19,8 @@ export default function GenericLinkForm({ entityId, entityType, onSuccess }: Gen
   const [messageApi, contextHolder] = message.useMessage();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get available users that could be linked - using the correct function name "get" instead of "getAll"
-  const users = useQuery(api.models.users.get);
+  // Get available inactive users using the isActive query
+  const usersStatus = useQuery(api.models.users.isActive);
   
   // Get appropriate link mutation based on entity type
   const linkAccount = useMutation(
@@ -58,8 +58,8 @@ export default function GenericLinkForm({ entityId, entityType, onSuccess }: Gen
     }
   };
 
-  // Format users for select dropdown
-  const userOptions = users?.map(user => ({
+  // Format only inactive users for select dropdown
+  const userOptions = usersStatus?.inactive?.map(user => ({
     label: `${user.name || 'Unnamed'} (${user.email})`,
     value: user._id,
   })) || [];
@@ -86,11 +86,12 @@ export default function GenericLinkForm({ entityId, entityType, onSuccess }: Gen
           rules={[{ required: true, message: 'Please select a user' }]}
         >
           <Select
-            placeholder="Select a user to link"
+            placeholder={userOptions.length ? "Select a user to link" : "No available users to link"}
             options={userOptions}
-            loading={!users}
+            loading={!usersStatus}
             showSearch
             optionFilterProp="label"
+            notFoundContent="No unassigned users available"
           />
         </Form.Item>
 
@@ -99,6 +100,7 @@ export default function GenericLinkForm({ entityId, entityType, onSuccess }: Gen
             type="primary" 
             htmlType="submit" 
             loading={isSubmitting}
+            disabled={!userOptions.length}
             block
           >
             Link Account

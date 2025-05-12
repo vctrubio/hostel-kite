@@ -3,17 +3,13 @@
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import UserList from "@/components/list/userList";
-import StudentForm from "@/components/forms/studentForm";
-import StudentList from "@/components/list/studentList";
-import TeacherForm from "@/components/forms/teacherForm";
-import TeacherList from "@/components/list/teacherList";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Card } from "antd";
+import GenericEntityForm from "@/components/forms/GenericEntityForm";
 
 export default function HomePage() {
   const { viewer } = useQuery(api.models.users.getViewer) ?? {};
   const userData = useQuery(api.models.users.getUserData);
-  const router = useRouter();
 
   if (viewer === undefined) {
     return (
@@ -65,21 +61,25 @@ export default function HomePage() {
         )}
       </header>
 
-      <div className="flex gap-8 mx-auto">
-        <UserList />
-
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Left column - User List */}
         <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col gap-6">
-              <StudentForm />
-              <StudentList />
-            </div>
+          <Card title="User Management" className="shadow-md mb-8">
+            <UserList />
+          </Card>
+        </div>
 
-            <div className="flex flex-col gap-6">
-              <TeacherForm />
-              <TeacherList />
-            </div>
-          </div>
+        {/* Right column - Create Forms */}
+        <div className="flex flex-col gap-8">
+          {/* Student Form */}
+          <Card title="Create Student" className="shadow-md">
+            <GenericEntityForm entityType="students" />
+          </Card>
+
+          {/* Teacher Form */}
+          <Card title="Create Teacher" className="shadow-md">
+            <GenericEntityForm entityType="teachers" />
+          </Card>
         </div>
       </div>
     </div>
