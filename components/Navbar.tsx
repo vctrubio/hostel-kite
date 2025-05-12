@@ -2,9 +2,10 @@
 
 import { useConvexAuth } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminNavRoutes } from "@/utils/routesNavigation";
+import { Menu } from "antd"; // Import Menu from antd
 
 export function UnAuthNavbar() {
   return (
@@ -16,19 +17,28 @@ export function UnAuthNavbar() {
 }
 
 export function AuthAdminNavbar() {
+  const pathname = usePathname();
+
+  const menuItems = Object.entries(adminNavRoutes).map(([name, path]) => ({
+    key: path,
+    label: (
+      <Link href={path} className="capitalize">
+        {name}
+      </Link>
+    ),
+  }));
+
   return (
-    <div className="border-b-2 p-8">
-      <nav className="flex flex-row justify-center gap-8">
-        {Object.entries(adminNavRoutes).map(([name, path]) => (
-          <Link 
-            key={name} 
-            href={path}
-            className="hover:underline capitalize text-2xl"
-          >
-            {name}
-          </Link>
-        ))}
-      </nav>
+    <div className="flex shadow-md justify-between">
+      <div className="grow">
+        <Menu
+          mode="horizontal"
+          selectedKeys={[pathname]}
+          items={menuItems}
+          theme="light"
+        />
+      </div>
+      <SignOutButton />
     </div>
   );
 }
@@ -52,7 +62,7 @@ function SignOutButton() {
     <>
       {isAuthenticated && (
         <button
-          className="border rounded-xl text-foreground rounded-md p-2"
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-sm"
           onClick={() =>
             void signOut().then(() => {
               router.push("/signin");
