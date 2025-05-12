@@ -12,6 +12,8 @@ seed-students:
 seed-teachers:
 	npx convex import seedings/seedTeachers.jsonl --table teachers --append
 
+seed-equipment: seed-kites seed-bars seed-boards 
+
 seed-kites:
 	npx convex import seedings/seedKites.jsonl --table kites --append
 
