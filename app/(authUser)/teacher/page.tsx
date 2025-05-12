@@ -2,22 +2,20 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import Navbar from "@/components/Navbar";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useRoleValidation } from "@/components/RedirectTmpClient";
 
-export default function StudentPage() {
+export default function TeacherPage() {
   const router = useRouter();
   const userData = useQuery(api.models.users.getUserData);
   
   // Use the role validation hook to handle redirects
-  useRoleValidation(userData, "student");
+  useRoleValidation(userData, "teacher");
 
   if (!userData) {
     return (
       <>
-        <Navbar />
         <main className="p-8">
           <div className="flex justify-center items-center min-h-[60vh]">
             <div className="animate-pulse text-xl">Loading...</div>
@@ -28,7 +26,7 @@ export default function StudentPage() {
   }
 
   // Handle case where userData is null or userData doesn't have expected properties
-  const name = 'name' in userData ? userData.name : 'Student';
+  const name = 'name' in userData ? userData.name : 'Teacher';
   const email = 'email' in userData ? userData.email : 'No email available';
 
   return (
@@ -36,11 +34,11 @@ export default function StudentPage() {
       <main className="p-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="bg-blue-600 p-6">
+            <div className="bg-green-600 p-6">
               <h1 className="text-3xl font-bold text-white">
                 Hello, Welcome {name}!
               </h1>
-              <p className="text-blue-100 mt-2">
+              <p className="text-green-100 mt-2">
                 {new Date().toLocaleDateString("en-US", { 
                   weekday: 'long', 
                   year: 'numeric', 
@@ -58,15 +56,15 @@ export default function StudentPage() {
                     <p className="text-sm text-gray-500">Email</p>
                     <p className="font-medium">{email}</p>
                   </div>
-                  {/* Add more student info here as needed */}
+                  {/* Add more teacher info here as needed */}
                 </div>
               </div>
               
               <div>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-3">Dashboard</h2>
                 <p className="text-gray-600">
-                  Welcome to your student dashboard. Here you can manage your hostel information,
-                  view room assignments, and access other student services.
+                  Welcome to your teacher dashboard. Here you can manage your classes,
+                  view student information, and access other teaching resources.
                 </p>
               </div>
             </div>
