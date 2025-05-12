@@ -1,5 +1,5 @@
 1. where are we []? -- setting up admin 101s
-2. set middleware for roles
+2. set middleware for roles | useeffect to check userData.role
 
 
 --- thikn --- 
