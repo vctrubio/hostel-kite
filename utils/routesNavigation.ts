@@ -6,6 +6,6 @@ export const adminNavRoutes = {
     packages: '/packages',
     bookings: '/bookings',
     lessons: '/lessons',
-    // sessions: '/sessions',
+    sessions: '/sessions',
     payments: '/payments'
 }
