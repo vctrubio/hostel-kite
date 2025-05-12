@@ -1,5 +1,5 @@
-import { Table, Button, Space } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Button, Space, Tooltip, Tag } from "antd";
+import { EditOutlined, DeleteOutlined, CheckCircleFilled, StopOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { genericTableView } from "./modelTableViews";
 
@@ -18,7 +18,44 @@ export function generateTableColumns(modelKey: string, data: any[] | null) {
     return [];
   }
 
-  const columns = Object.entries(modelConfig.columns).map(([key, type]) => {
+  // Add verification status column for students and teachers
+  const allColumns = [];
+  
+  // Add verification column first if this is students or teachers
+  if (modelKey === "students" || modelKey === "teachers") {
+    allColumns.push({
+      title: 'Verified',
+      dataIndex: 'userId',
+      key: 'verified',
+      width: 90,
+      filters: [
+        { text: 'Verified', value: true },
+        { text: 'Not Verified', value: false },
+      ],
+      onFilter: (value: boolean, record: any) => {
+        return value ? !!record.userId : !record.userId;
+      },
+      render: (userId: string | undefined) => {
+        const isVerified = !!userId;
+        return isVerified ? (
+          <Tooltip title="User account linked">
+            <Tag color="success" icon={<CheckCircleFilled />}>
+              Verified
+            </Tag>
+          </Tooltip>
+        ) : (
+          <Tooltip title="No user account linked">
+            <Tag color="error" icon={<StopOutlined />}>
+              Unverified
+            </Tag>
+          </Tooltip>
+        );
+      },
+    });
+  }
+
+  // Add regular columns
+  const regularColumns = Object.entries(modelConfig.columns).map(([key, type]) => {
     const column = {
       title: key.charAt(0).toUpperCase() + key.slice(1),
       dataIndex: key,
@@ -58,10 +95,13 @@ export function generateTableColumns(modelKey: string, data: any[] | null) {
 
     return column;
   });
+  
+  // Add regular columns
+  allColumns.push(...regularColumns);
 
   // Add action column if actions are defined
   if (modelConfig.actions) {
-    columns.push({
+    allColumns.push({
       title: 'Actions',
       key: 'actions',
       render: (_: any, record: any) => (
@@ -91,7 +131,7 @@ export function generateTableColumns(modelKey: string, data: any[] | null) {
     });
   }
 
-  return columns;
+  return allColumns;
 }
 
 /**
@@ -125,11 +165,42 @@ export function GenericTable({ modelKey, data }: {
             key: item._id,
           }))}
           expandable={{
-            expandedRowRender: (record) => (
-              <p style={{ margin: 0 }}>
-                This is an expandable row for {record.fullName}. Additional details can be shown here.
-              </p>
-            ),
+            expandedRowRender: (record) => {
+              // Show additional details in the expanded row
+              const additionalDetails = [];
+              
+              // Add any fields that aren't in the columns
+              for (const [key, value] of Object.entries(record)) {
+                // Skip fields that are already in columns or are internal fields
+                if (key === 'key' || key === '_id' || key === '_creationTime' || 
+                    Object.keys(modelConfig.columns).includes(key)) {
+                  continue;
+                }
+                
+                if (value !== undefined && value !== null) {
+                  additionalDetails.push(
+                    <div key={key} style={{ margin: '4px 0' }}>
+                      <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{' '}
+                      {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                    </div>
+                  );
+                }
+              }
+              
+              return (
+                <div style={{ padding: '8px 0' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                    Additional Details for {record.fullName}
+                  </div>
+                  {additionalDetails.length > 0 ? (
+                    additionalDetails
+                  ) : (
+                    <div>No additional details available.</div>
+                  )}
+                </div>
+              );
+            },
+            expandRowByClick: true,
           }}
         />
       ) : (
