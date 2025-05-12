@@ -203,4 +203,42 @@ export const genericTableView = {
       }
     }
   },
+  bookings: {
+    columns: {
+      startDate: "string",
+      packageId: "string",
+      studentsIds: "array",
+    },
+    formFields: {
+      packageId: {
+        type: "select",
+        label: "Package",
+        required: true,
+        optionsQuery: "models.package.get",
+        valueField: "_id",
+        labelField: "desc",
+      },
+      studentsIds: {
+        type: "multiselect",
+        label: "Students",
+        required: true,
+        optionsQuery: "models.student.get",
+        valueField: "_id",
+        labelField: "fullName",
+      },
+      startDate: {
+        type: "date",
+        label: "Start Date",
+        required: true,
+      },
+    },
+    actions: {
+      edit: {
+        url: "/bookings",
+      },
+      delete: {
+        url: "/bookings",
+      }
+    }
+  },
 };

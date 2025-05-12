@@ -69,13 +69,14 @@ export const sessionSchemaFields = {
   kiteId: v.id("kites"),
   barId: v.id("bars"),
   boardId: v.id("boards"),
+  date: v.string(),
   duration: v.number(), // in minutes, = hours, to know what to subtract from the bookingPackage
 };
 
 export const lessonSchemaFields = {
   teacherId: v.id("teachers"),
   bookingId: v.id("bookings"),
-  sessionId: v.id("sessions"),
+  sessionId: v.array(v.id("sessions")),
   paymentId: v.id("payments"),
   postLesson: v.id("postLessons"),
 };
