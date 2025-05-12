@@ -7,6 +7,7 @@ import { genericTableView } from "@/utils/modelTableViews";
 import { Id } from "@/convex/_generated/dataModel";
 import { Button, Form, Input, InputNumber, message, Card, Alert, Spin, Select, Space } from "antd";
 import VerificationBadge from "@/components/custom/VerificationBadge";
+import GenericLinkForm from "./GenericLinkForm";
 
 type EntityType = "students" | "teachers";
 
@@ -90,6 +91,23 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
     setIsEditing(true);
   };
 
+  // Add a refresh trigger for when entity is linked to a user
+  const handleLinkSuccess = () => {
+    // Force a re-fetch of the entity data
+    if (entityType === "students") {
+      api.models.student.getById.invalidate();
+    } else {
+      api.models.teacher.getById.invalidate();
+    }
+  };
+
+  // Custom styles for better readability of disabled inputs
+  const disabledInputStyle = {
+    color: 'rgba(0, 0, 0, 0.85)', // Darker text color for disabled state
+    background: '#f5f5f5',        // Light background to indicate disabled
+    cursor: 'not-allowed'
+  };
+
   // Render form fields based on configuration
   const renderFormFields = () => {
     const { formFields } = entityConfig;
@@ -101,14 +119,16 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
         name: fieldName,
         label: label,
         rules: required ? [{ required: true, message: `${label} is required` }] : undefined,
-        disabled: !isEditing
       };
 
       switch (fieldConfig.type) {
         case "string":
           return (
             <Form.Item key={fieldName} {...commonProps}>
-              <Input />
+              <Input 
+                disabled={!isEditing} 
+                style={!isEditing ? disabledInputStyle : undefined}
+              />
             </Form.Item>
           );
           
@@ -118,19 +138,23 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
               <InputNumber 
                 min={fieldConfig.min} 
                 max={fieldConfig.max}
-                style={{ width: '100%' }} 
+                style={{ 
+                  width: '100%',
+                  ...((!isEditing) ? disabledInputStyle : {})
+                }} 
+                disabled={!isEditing}
               />
             </Form.Item>
           );
           
         case "multiselect":
-          // Using Select component for better React 19 compatibility
           return (
             <Form.Item key={fieldName} {...commonProps}>
               <Select
                 mode="multiple"
                 placeholder={`Select ${label}`}
                 disabled={!isEditing}
+                style={!isEditing ? disabledInputStyle : undefined}
                 options={fieldConfig.options.map((option: string) => ({
                   label: option,
                   value: option,
@@ -166,6 +190,9 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
     );
   }
 
+  // Check if entity is verified (has userId)
+  const isVerified = entityId && entityData && !!entityData.userId;
+
   // Create a human-readable entity type (e.g., "Student" or "Teacher")
   const entityTypeSingular = entityType.slice(0, -1).charAt(0).toUpperCase() + entityType.slice(0, -1).slice(1);
   
@@ -197,40 +224,51 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
   );
 
   return (
-    <Card
-      title={
-        <div className="flex items-center gap-4">
-          <span>{title}</span>
-          {/* Show ID if it exists */}
-          {entityId && (
-            <span className="text-gray-500 text-sm font-mono">ID: {entityId}</span>
-          )}
-          {/* Show verification badge if data exists */}
-          {entityId && entityData && (
-            <VerificationBadge isVerified={!!entityData.userId} />
-          )}
-        </div>
-      }
-      extra={extraHeaderContent}
-      className="w-full shadow-md"
-    >
-      {contextHolder}
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={entityData || {}}
+    <>
+      <Card
+        title={
+          <div className="flex items-center gap-4">
+            <span>{title}</span>
+            {/* Show ID if it exists */}
+            {entityId && (
+              <span className="text-gray-500 text-sm font-mono">ID: {entityId}</span>
+            )}
+            {/* Show verification badge if data exists */}
+            {entityId && entityData && (
+              <VerificationBadge isVerified={isVerified} />
+            )}
+          </div>
+        }
+        extra={extraHeaderContent}
+        className="w-full shadow-md"
       >
-        {renderFormFields()}
+        {contextHolder}
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={entityData || {}}
+        >
+          {renderFormFields()}
 
-        {/* Bottom create button only for new entities */}
-        {!entityId && isEditing && (
-          <Form.Item>
-            <Button type="primary" onClick={handleSubmit} block>
-              Create
-            </Button>
-          </Form.Item>
-        )}
-      </Form>
-    </Card>
+          {/* Bottom create button only for new entities */}
+          {!entityId && isEditing && (
+            <Form.Item>
+              <Button type="primary" onClick={handleSubmit} block>
+                Create
+              </Button>
+            </Form.Item>
+          )}
+        </Form>
+      </Card>
+      
+      {/* Show linking form if entity exists but is not verified */}
+      {entityId && entityData && !isVerified && (
+        <GenericLinkForm 
+          entityId={entityId} 
+          entityType={entityType}
+          onSuccess={handleLinkSuccess}
+        />
+      )}
+    </>
   );
 }

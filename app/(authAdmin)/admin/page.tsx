@@ -71,13 +71,11 @@ export default function HomePage() {
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col gap-6">
-              <h2 className="text-2xl font-bold">Students</h2>
               <StudentForm />
               <StudentList />
             </div>
 
             <div className="flex flex-col gap-6">
-              <h2 className="text-2xl font-bold">Teachers</h2>
               <TeacherForm />
               <TeacherList />
             </div>

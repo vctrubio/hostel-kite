@@ -5,6 +5,9 @@ import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 
+// Import Ant Design compatibility patch for React 19
+import '@ant-design/v5-patch-for-react-19';
+
 export const metadata: Metadata = {
   title: "Kite Management",
   description: "The Kite Hostel Management App",
