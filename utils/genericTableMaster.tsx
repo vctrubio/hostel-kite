@@ -1,24 +1,113 @@
+import React from "react";
 import { Table, Button, Space, Tooltip, Tag } from "antd";
 import { EditOutlined, DeleteOutlined, CheckCircleFilled, StopOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { genericTableView } from "./modelTableViews";
 
-/**
- * Creates dynamic table columns based on model configuration
- * @param modelKey The key of the model in genericTableView (e.g., 'students', 'teachers')
- * @param data The data to be displayed in the table
- * @returns Column configuration for Ant Design Table
- */
-export function generateTableColumns(modelKey: string, data: any[] | null) {
+// Types
+type ModelKey = keyof typeof genericTableView;
+type ModelData = any[] | null;
+type TableRecord = any;
+
+// Component for verification status tag
+const VerificationStatus: React.FC<{ userId: string | undefined }> = ({ userId }) => {
+  const isVerified = !!userId;
+  
+  return isVerified ? (
+    <Tooltip title="User account linked">
+      <Tag color="success" icon={<CheckCircleFilled />}>
+        Verified
+      </Tag>
+    </Tooltip>
+  ) : (
+    <Tooltip title="No user account linked">
+      <Tag color="error" icon={<StopOutlined />}>
+        Unverified
+      </Tag>
+    </Tooltip>
+  );
+};
+
+// Component for action buttons
+const ActionButtons: React.FC<{ 
+  record: TableRecord, 
+  actions: any,
+  router: ReturnType<typeof useRouter>
+}> = ({ record, actions, router }) => {
+  return (
+    <Space size="middle">
+      {actions.edit && (
+        <Button 
+          icon={<EditOutlined />} 
+          onClick={() => {
+            console.log('Edit clicked for:', record);
+            router.push(`${actions.edit.url}/${record._id}`);
+          }}
+        />
+      )}
+      {actions.delete && (
+        <Button 
+          icon={<DeleteOutlined />} 
+          danger
+          onClick={() => {
+            console.log('Delete clicked for:', record);
+            router.push(`${actions.delete.url}/${record._id}`);
+          }}
+        />
+      )}
+    </Space>
+  );
+};
+
+// Component for expanded row content
+const ExpandedRowContent: React.FC<{
+  record: TableRecord,
+  modelConfig: any
+}> = ({ record, modelConfig }) => {
+  const additionalDetails = [];
+  
+  // Add any fields that aren't in the columns
+  for (const [key, value] of Object.entries(record)) {
+    // Skip fields that are already in columns or are internal fields
+    if (key === 'key' || key === '_id' || key === '_creationTime' || 
+        Object.keys(modelConfig.columns).includes(key)) {
+      continue;
+    }
+    
+    if (value !== undefined && value !== null) {
+      additionalDetails.push(
+        <div key={key} style={{ margin: '4px 0' }}>
+          <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{' '}
+          {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+        </div>
+      );
+    }
+  }
+  
+  return (
+    <div style={{ padding: '8px 0' }}>
+      <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+        Additional Details for {record.fullName}
+      </div>
+      {additionalDetails.length > 0 ? (
+        additionalDetails
+      ) : (
+        <div>No additional details available.</div>
+      )}
+    </div>
+  );
+};
+
+// Component for column generator
+const useTableColumns = (modelKey: string, data: ModelData) => {
   const router = useRouter();
-  const modelConfig = genericTableView[modelKey as keyof typeof genericTableView];
+  const modelConfig = genericTableView[modelKey as ModelKey];
   
   if (!modelConfig) {
     console.error(`No configuration found for model: ${modelKey}`);
     return [];
   }
 
-  // Add verification status column for students and teachers
   const allColumns = [];
   
   // Add verification column first if this is students or teachers
@@ -29,28 +118,15 @@ export function generateTableColumns(modelKey: string, data: any[] | null) {
       key: 'verified',
       width: 90,
       filters: [
-        { text: 'Verified', value: true },
-        { text: 'Not Verified', value: false },
+        { text: 'Verified', value: 'true' },
+        { text: 'Not Verified', value: 'false' },
       ],
-      onFilter: (value: boolean, record: any) => {
-        return value ? !!record.userId : !record.userId;
+      onFilter: (value: string | number | boolean, record: any) => {
+        // Convert string value back to boolean for comparison
+        const filterValue = value === 'true';
+        return filterValue ? !!record.userId : !record.userId;
       },
-      render: (userId: string | undefined) => {
-        const isVerified = !!userId;
-        return isVerified ? (
-          <Tooltip title="User account linked">
-            <Tag color="success" icon={<CheckCircleFilled />}>
-              Verified
-            </Tag>
-          </Tooltip>
-        ) : (
-          <Tooltip title="No user account linked">
-            <Tag color="error" icon={<StopOutlined />}>
-              Unverified
-            </Tag>
-          </Tooltip>
-        );
-      },
+      render: (userId: string | undefined) => <VerificationStatus userId={userId} />
     });
   }
 
@@ -105,34 +181,13 @@ export function generateTableColumns(modelKey: string, data: any[] | null) {
       title: 'Actions',
       key: 'actions',
       render: (_: any, record: any) => (
-        <Space size="middle">
-          {modelConfig.actions.edit && (
-            <Button 
-              icon={<EditOutlined />} 
-              onClick={() => {
-                console.log('Edit clicked for:', record);
-                router.push(`${modelConfig.actions.edit.url}/${record._id}`);
-              }}
-            />
-          )}
-          {modelConfig.actions.delete && (
-            <Button 
-              icon={<DeleteOutlined />} 
-              danger
-              onClick={() => {
-                console.log('Delete clicked for:', record);
-                // For now just navigating, but could be used for delete confirmation
-                router.push(`${modelConfig.actions.delete.url}/${record._id}`);
-              }}
-            />
-          )}
-        </Space>
-      ),
+        <ActionButtons record={record} actions={modelConfig.actions} router={router} />
+      )
     });
   }
 
   return allColumns;
-}
+};
 
 /**
  * Creates a data table for model-based data
@@ -145,7 +200,7 @@ export function GenericTable({ modelKey, data }: {
   data: any[] | undefined
 }) {
   // Lookup the configuration from genericTableView
-  const modelConfig = genericTableView[modelKey as keyof typeof genericTableView];
+  const modelConfig = genericTableView[modelKey as ModelKey];
   
   if (!modelConfig) {
     return <div>Configuration not found for {modelKey}</div>;
@@ -153,59 +208,25 @@ export function GenericTable({ modelKey, data }: {
 
   // Convert undefined to null for consistency
   const tableData = data || null;
-  const columns = generateTableColumns(modelKey, tableData);
+  const columns = useTableColumns(modelKey, tableData);
+  
+  if (!tableData) {
+    return <div>Loading...</div>;
+  }
   
   return (
-    <>
-      {tableData ? (
-        <Table 
-          columns={columns} 
-          dataSource={tableData.map(item => ({
-            ...item,
-            key: item._id,
-          }))}
-          expandable={{
-            expandedRowRender: (record) => {
-              // Show additional details in the expanded row
-              const additionalDetails = [];
-              
-              // Add any fields that aren't in the columns
-              for (const [key, value] of Object.entries(record)) {
-                // Skip fields that are already in columns or are internal fields
-                if (key === 'key' || key === '_id' || key === '_creationTime' || 
-                    Object.keys(modelConfig.columns).includes(key)) {
-                  continue;
-                }
-                
-                if (value !== undefined && value !== null) {
-                  additionalDetails.push(
-                    <div key={key} style={{ margin: '4px 0' }}>
-                      <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong>{' '}
-                      {typeof value === 'object' ? JSON.stringify(value) : String(value)}
-                    </div>
-                  );
-                }
-              }
-              
-              return (
-                <div style={{ padding: '8px 0' }}>
-                  <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>
-                    Additional Details for {record.fullName}
-                  </div>
-                  {additionalDetails.length > 0 ? (
-                    additionalDetails
-                  ) : (
-                    <div>No additional details available.</div>
-                  )}
-                </div>
-              );
-            },
-            expandRowByClick: true,
-          }}
-        />
-      ) : (
-        <div>Loading...</div>
-      )}
-    </>
+    <Table 
+      columns={columns} 
+      dataSource={tableData.map(item => ({
+        ...item,
+        key: item._id,
+      }))}
+      expandable={{
+        expandedRowRender: (record) => (
+          <ExpandedRowContent record={record} modelConfig={modelConfig} />
+        ),
+        expandRowByClick: true,
+      }}
+    />
   );
 }

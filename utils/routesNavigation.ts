@@ -2,10 +2,10 @@ export const adminNavRoutes = {
     admin: '/admin',
     students: '/students',
     teachers: '/teachers',
-    lessons: '/lessons',
-    packages: '/packages',
     equipments: '/equipments',
-    payments: '/payments',
+    packages: '/packages',
     bookings: '/bookings',
-    sessions: '/sessions'
+    lessons: '/lessons',
+    sessions: '/sessions',
+    payments: '/payments'
 }
