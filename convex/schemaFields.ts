@@ -65,7 +65,7 @@ export const bookingSchemaFields = {
 
 // Lessons Settings (this can be in pre lessons creation, or after a lesson is created, it can be added. and it must be added) EquipmentSessions ////////////////////////
 
-export const equipmentSessionSchemaFields = {
+export const sessionSchemaFields = {
   kiteId: v.id("kites"),
   barId: v.id("bars"),
   boardId: v.id("boards"),
@@ -75,7 +75,7 @@ export const equipmentSessionSchemaFields = {
 export const lessonSchemaFields = {
   teacherId: v.id("teachers"),
   bookingId: v.id("bookings"),
-  equipmentSession: v.id("equipmentSessions"),
+  sessionId: v.id("sessions"),
   paymentId: v.id("payments"),
   postLesson: v.id("postLessons"),
 };

@@ -9,12 +9,7 @@ import { Button, Form, Input, InputNumber, message, Card, Alert, Spin, Select, S
 import VerificationBadge from "@/components/custom/VerificationBadge";
 import GenericLinkForm from "./GenericLinkForm";
 
-type EntityType = "students" | "teachers";
-
-// Infer form data types from the genericTableView configuration
-type GenericFormData = {
-  [key: string]: string | number | string[] | undefined;
-};
+type EntityType = "students" | "teachers" | "packages";
 
 interface GenericEntityFormProps {
   entityType: EntityType;
@@ -30,23 +25,39 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
   const entityConfig = genericTableView[entityType];
   
   // Get mutation functions for this entity type
-  const createEntity = useMutation(
-    entityType === "students" 
-      ? api.models.student.create 
-      : api.models.teacher.create
-  );
+  const getMutationFunction = () => {
+    switch(entityType) {
+      case "students":
+        return entityId ? api.models.student.updateId : api.models.student.create;
+      case "teachers":
+        return entityId ? api.models.teacher.updateId : api.models.teacher.create;
+      case "packages":
+        return entityId ? api.models.package.updateId : api.models.package.create;
+      default:
+        throw new Error(`Unsupported entity type: ${entityType}`);
+    }
+  };
+
+  // Get query function for this entity type
+  const getQueryFunction = () => {
+    switch(entityType) {
+      case "students":
+        return api.models.student.getById;
+      case "teachers":
+        return api.models.teacher.getById;
+      case "packages":
+        return api.models.package.getById;
+      default:
+        throw new Error(`Unsupported entity type: ${entityType}`);
+    }
+  };
   
-  const updateEntity = useMutation(
-    entityType === "students" 
-      ? api.models.student.updateId 
-      : api.models.teacher.updateId
-  );
+  const createEntity = useMutation(getMutationFunction());
+  const updateEntity = useMutation(getMutationFunction());
 
   // Query for existing entity data if ID is provided
   const entityData = useQuery(
-    entityType === "students" 
-      ? api.models.student.getById 
-      : api.models.teacher.getById,
+    getQueryFunction(),
     entityId ? { id: entityId as Id<any> } : "skip"
   );
 
@@ -96,8 +107,10 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
     // Force a re-fetch of the entity data
     if (entityType === "students") {
       api.models.student.getById.invalidate();
-    } else {
+    } else if (entityType === "teachers") {
       api.models.teacher.getById.invalidate();
+    } else if (entityType === "packages") {
+      api.models.package.getById.invalidate();
     }
   };
 
@@ -190,10 +203,11 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
     );
   }
 
-  // Check if entity is verified (has userId)
-  const isVerified = entityId && entityData && !!entityData.userId;
+  // Check if entity is verified (has userId) - only applies to students and teachers
+  const canBeVerified = entityType === "students" || entityType === "teachers";
+  const isVerified = canBeVerified && entityId && entityData && !!entityData.userId;
 
-  // Create a human-readable entity type (e.g., "Student" or "Teacher")
+  // Create a human-readable entity type (e.g., "Student", "Teacher", or "Package")
   const entityTypeSingular = entityType.slice(0, -1).charAt(0).toUpperCase() + entityType.slice(0, -1).slice(1);
   
   // Determine the title based on the current mode
@@ -233,8 +247,8 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
             {entityId && (
               <span className="text-gray-500 text-sm font-mono">ID: {entityId}</span>
             )}
-            {/* Show verification badge if data exists */}
-            {entityId && entityData && (
+            {/* Show verification badge if applicable and data exists */}
+            {canBeVerified && entityId && entityData && (
               <VerificationBadge isVerified={isVerified} />
             )}
           </div>
@@ -262,7 +276,7 @@ export default function GenericEntityForm({ entityType, entityId }: GenericEntit
       </Card>
       
       {/* Show linking form if entity exists but is not verified */}
-      {entityId && entityData && !isVerified && (
+      {canBeVerified && entityId && entityData && !isVerified && (
         <GenericLinkForm 
           entityId={entityId} 
           entityType={entityType}

@@ -10,7 +10,7 @@ import {
   boardSchemaFields,
   packageSchemaFields,
   bookingSchemaFields,
-  equipmentSessionSchemaFields,
+  sessionSchemaFields,
   lessonSchemaFields,
   paymentSchemaFields,
   postLesson
@@ -28,7 +28,7 @@ export default defineSchema({
   boards: defineTable(boardSchemaFields),
   packages: defineTable(packageSchemaFields),
   bookings: defineTable(bookingSchemaFields),
-  equipmentSessions: defineTable(equipmentSessionSchemaFields),
+  sessions: defineTable(sessionSchemaFields),
   lessons: defineTable(lessonSchemaFields),
   payments: defineTable(paymentSchemaFields),
   postLessons: defineTable(postLesson)

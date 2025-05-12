@@ -16,6 +16,8 @@ import type {
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as models_admin from "../models/admin.js";
+import type * as models_equipment from "../models/equipment.js";
+import type * as models_package from "../models/package.js";
 import type * as models_student from "../models/student.js";
 import type * as models_teacher from "../models/teacher.js";
 import type * as models_users from "../models/users.js";
@@ -34,6 +36,8 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
   "models/admin": typeof models_admin;
+  "models/equipment": typeof models_equipment;
+  "models/package": typeof models_package;
   "models/student": typeof models_student;
   "models/teacher": typeof models_teacher;
   "models/users": typeof models_users;

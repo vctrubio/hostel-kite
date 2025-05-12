@@ -81,4 +81,126 @@ export const genericTableView = {
       }
     }
   },
+  kites: {
+    columns: {
+      model: "string",
+      size: "number",
+    },
+    formFields: {
+      model: {
+        type: "string",
+        label: "Model",
+        required: true,
+      },
+      size: {
+        type: "number",
+        label: "Size",
+        required: true,
+        min: 1,
+      },
+    },
+    actions: {
+      edit: {
+        url: "/equipments",
+      },
+      delete: {
+        url: "/equipments",
+      }
+    }
+  },
+  boards: {
+    columns: {
+      model: "string",
+      size: "number",
+    },
+    formFields: {
+      model: {
+        type: "string",
+        label: "Model",
+        required: true,
+      },
+      size: {
+        type: "number",
+        label: "Size",
+        required: true,
+        min: 1,
+      },
+    },
+    actions: {
+      edit: {
+        url: "/equipments",
+      },
+      delete: {
+        url: "/equipments",
+      }
+    }
+  },
+  bars: {
+    columns: {
+      model: "string",
+      size: "number",
+    },
+    formFields: {
+      model: {
+        type: "string",
+        label: "Model",
+        required: true,
+      },
+      size: {
+        type: "number",
+        label: "Size",
+        required: true,
+        min: 1,
+      },
+    },
+    actions: {
+      edit: {
+        url: "/equipments",
+      },
+      delete: {
+        url: "/equipments",
+      }
+    }
+  },
+  packages: {
+    columns: {
+      price: "number",
+      hours: "number",
+      capacity: "number",
+      desc: "string",
+    },
+    formFields: {
+      price: {
+        type: "number",
+        label: "Price",
+        required: true,
+        min: 0,
+      },
+      hours: {
+        type: "number",
+        label: "Hours",
+        required: true,
+        min: 1,
+      },
+      capacity: {
+        type: "number",
+        label: "Capacity",
+        required: true,
+        min: 1,
+      },
+      desc: {
+        type: "string",
+        label: "Description",
+        required: false,
+      },
+    },
+    actions: {
+      edit: {
+        url: "/packages",
+      },
+      delete: {
+        url: "/packages",
+      }
+    }
+  },
 };
