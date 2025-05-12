@@ -1,5 +1,5 @@
-import Navbar from '@/components/Navbar';
 import React from 'react';
+import { AuthAdminNavbar } from '@/components/Navbar';
 
 export default function AuthLayout({
   children,
@@ -7,10 +7,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="">
-        <div>auth</div>
-        <Navbar/>
+    <>
+      <AuthAdminNavbar />
         {children}
-    </div>
+    </>
   );
 }

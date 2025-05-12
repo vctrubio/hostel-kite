@@ -2,14 +2,14 @@
 
 import { useQuery } from "convex/react";
 import { api } from "../convex/_generated/api";
-import Navbar from "@/components/Navbar";
-import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { redirectRole } from "@/components/RedirectTmpClient";
 import { AuthRoles } from "@/components/matching/authRoles";
-import { Button, DatePicker} from "antd";
-import {SmileOutlined} from "@ant-design/icons";
+import Link from "next/link";
+import { UnAuthNavbar } from "@/components/Navbar";
+import { Button, DatePicker } from "antd";
+import { SmileOutlined } from "@ant-design/icons";
 
 // Navigation component
 const NavLinks = ({ links }: { links: { title: string; href: string }[] }) => {
@@ -57,7 +57,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar />
+      <UnAuthNavbar />
       <main className="p-8 flex flex-col gap-8">
 
         {viewer !== undefined ? (
@@ -76,9 +76,9 @@ export default function Home() {
         </section>
 
         <div className="max-w-4xl border p-4 gap-4 flex justify-between mx-auto">
-        <SmileOutlined style={{ fontSize: '24px', color: '#08c' }} />
-        <DatePicker />
-        <Button type="primary">Primary Button</Button>
+          <SmileOutlined style={{ fontSize: '24px', color: '#08c' }} />
+          <DatePicker />
+          <Button type="primary">Primary Button</Button>
         </div>
 
         <div className="mx-auto border p-4 rounded-md">
