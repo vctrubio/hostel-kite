@@ -17,15 +17,10 @@ export default function LessonsPage() {
   const [isSessionModalOpen, setIsSessionModalOpen] = useState(false);
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
 
-  // Fetch data
-  const lessons = useQuery(api.models.lesson.get);
-  const teachers = useQuery(api.models.teacher.get);
-  const bookings = useQuery(api.models.booking.get);
-  const packages = useQuery(api.models.package.get);
-  const students = useQuery(api.models.student.get);
-  
-  // State to store enriched lessons data with readable names
-  const [enrichedLessons, setEnrichedLessons] = useState<any[]>([]);
+  // Fetch data with the more efficient getWithDetails query
+  const lessonsWithDetails = useQuery(api.models.lesson.getWithDetails);
+
+  // State to store sessions by lesson
   const [sessionsByLesson, setSessionsByLesson] = useState<Record<string, any[]>>({});
   
   // Delete mutation
@@ -38,42 +33,6 @@ export default function LessonsPage() {
     selectedLessonId ? { lessonId: selectedLessonId as any } : "skip"
   );
   
-  // Process lessons to add readable information
-  useEffect(() => {
-    if (lessons && teachers && bookings && packages && students) {
-      const enriched = lessons.map(lesson => {
-        // Find teacher info
-        const teacher = teachers.find(t => t._id === lesson.teacherId);
-        
-        // Find booking info
-        const booking = bookings.find(b => b._id === lesson.bookingId);
-        
-        // Find package info if booking exists
-        const pkg = booking?.packageId ? 
-          packages.find(p => p._id === booking.packageId) : null;
-        
-        // Find students info if booking exists
-        const studentNames = booking?.studentsIds
-          ?.map(id => {
-            const student = students.find(s => s._id === id);
-            return student ? student.fullName : "Unknown";
-          })
-          .join(", ") || "No students";
-        
-        return {
-          ...lesson,
-          teacherName: teacher?.fullName || "Unknown Teacher",
-          packageName: pkg?.desc || "Unknown Package",
-          studentNames,
-          sessionCount: (lesson.sessionId || []).length,
-          date: booking?.startDate || "No date",
-        };
-      });
-      
-      setEnrichedLessons(enriched);
-    }
-  }, [lessons, teachers, bookings, packages, students]);
-
   // Update sessions when a lesson is selected
   useEffect(() => {
     if (selectedLessonSessions) {
@@ -136,6 +95,16 @@ export default function LessonsPage() {
       title: 'Package',
       dataIndex: 'packageName',
       key: 'packageName',
+      render: (text: string, record: any) => (
+        <div>
+          <div>{text}</div>
+          {record.packageInfo && (
+            <div className="text-xs text-gray-500">
+              {record.packageInfo.hours}h, {record.packageInfo.capacity} students, ${record.packageInfo.price}
+            </div>
+          )}
+        </div>
+      )
     },
     {
       title: 'Students',
@@ -184,7 +153,7 @@ export default function LessonsPage() {
     },
   ];
 
-  // Columns for sessions table
+  // Columns for sessions table - now with proper equipment information
   const sessionColumns = [
     {
       title: 'Date',
@@ -264,7 +233,7 @@ export default function LessonsPage() {
         
         {/* Lessons Table */}
         <Table 
-          dataSource={enrichedLessons} 
+          dataSource={lessonsWithDetails} 
           columns={lessonColumns}
           rowKey="_id"
           expandable={{
@@ -284,6 +253,7 @@ export default function LessonsPage() {
             expandIcon: () => null, // Hide the default expand icon
             expandedRowKeys: selectedLessonId ? [selectedLessonId] : [],
           }}
+          loading={lessonsWithDetails === undefined}
         />
       </div>
     </main>

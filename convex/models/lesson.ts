@@ -90,3 +90,56 @@ export const deleteId = mutation({
     return await ctx.db.delete(args.id);
   },
 });
+
+export const getWithDetails = query({
+  handler: async (ctx) => {
+    const lessons = await ctx.db.query("lessons").collect();
+    
+    // Collect all the necessary details in parallel for better performance
+    const lessonsWithDetails = await Promise.all(
+      lessons.map(async (lesson) => {
+        // Get teacher details
+        const teacher = await ctx.db.get(lesson.teacherId);
+        
+        // Get booking details
+        const booking = await ctx.db.get(lesson.bookingId);
+        if (!booking) {
+          return {
+            ...lesson,
+            teacherName: teacher ? teacher.fullName : "Unknown Teacher",
+            packageName: "Unknown Package",
+            packageInfo: null,
+            bookingInfo: null,
+            studentNames: "No students",
+            date: "No date",
+            sessionCount: (lesson.sessionId || []).length
+          };
+        }
+        
+        // Get package details directly from the booking
+        const packageInfo = await ctx.db.get(booking.packageId);
+        
+        // Get student details
+        const studentNames = await Promise.all(
+          booking.studentsIds.map(async (studentId) => {
+            const student = await ctx.db.get(studentId);
+            return student ? student.fullName : "Unknown Student";
+          })
+        );
+        
+        return {
+          ...lesson,
+          teacherName: teacher ? teacher.fullName : "Unknown Teacher",
+          packageName: packageInfo ? packageInfo.desc : "Unknown Package",
+          packageInfo: packageInfo || null,
+          bookingInfo: booking,
+          studentNames: studentNames.join(", "),
+          date: booking.startDate || "No date",
+          sessionCount: (lesson.sessionId || []).length
+        };
+      })
+    );
+    
+    return lessonsWithDetails;
+  },
+});
