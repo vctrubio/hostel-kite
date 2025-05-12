@@ -1,0 +1,2 @@
+npm install @ant-design/pro-components --save || for enterprise upgrade
+npm install @antv/g2 --save || for graphs
