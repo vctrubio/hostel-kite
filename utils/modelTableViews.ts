@@ -241,4 +241,90 @@ export const genericTableView = {
       }
     }
   },
+  lessons: {
+    columns: {
+      teacherId: "string",
+      bookingId: "string",
+    },
+    formFields: {
+      teacherId: {
+        type: "select",
+        label: "Teacher",
+        required: true,
+        optionsQuery: "models.teacher.get",
+        valueField: "_id",
+        labelField: "fullName",
+      },
+      bookingId: {
+        type: "select",
+        label: "Booking",
+        required: true,
+        optionsQuery: "models.booking.get",
+        valueField: "_id",
+        labelField: "startDate",
+      }
+    },
+    actions: {
+      edit: {
+        url: "/lessons",
+      },
+      delete: {
+        url: "/lessons",
+      }
+    }
+  },
+  sessions: {
+    columns: {
+      kiteId: "string",
+      boardId: "string",
+      barId: "string",
+      date: "string",
+      duration: "number",
+    },
+    formFields: {
+      kiteId: {
+        type: "select",
+        label: "Kite",
+        required: true,
+        optionsQuery: "models.equipment.getKites",
+        valueField: "_id",
+        labelField: "model",
+      },
+      barId: {
+        type: "select",
+        label: "Bar",
+        required: true,
+        optionsQuery: "models.equipment.getBars",
+        valueField: "_id",
+        labelField: "model",
+      },
+      boardId: {
+        type: "select",
+        label: "Board",
+        required: true,
+        optionsQuery: "models.equipment.getBoards",
+        valueField: "_id",
+        labelField: "model",
+      },
+      date: {
+        type: "date",
+        label: "Date",
+        required: true,
+      },
+      duration: {
+        type: "number",
+        label: "Duration (minutes)",
+        required: true,
+        min: 15,
+      },
+    },
+    actions: {
+      edit: {
+        url: "/sessions",
+      },
+      delete: {
+        url: "/sessions",
+      }
+    }
+  },
 };

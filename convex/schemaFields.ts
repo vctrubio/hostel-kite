@@ -77,8 +77,8 @@ export const lessonSchemaFields = {
   teacherId: v.id("teachers"),
   bookingId: v.id("bookings"),
   sessionId: v.array(v.id("sessions")),
-  paymentId: v.id("payments"),
-  postLesson: v.id("postLessons"),
+  paymentId: v.optional(v.id("payments")),
+  postLesson: v.optional(v.id("postLessons")),
 };
 
 // Post Lessons (fired after a lesson occurs) - Payment, PostLessonStudentConfirmation, //////////////////// ///////////////////////////////////////////////////
