@@ -9,7 +9,7 @@ export default function TeachersPage() {
   
   return (
     <main className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Teachers Management</h1>
+      <h1 className="text-2xl font-bold mb-4">All Teachers</h1>
       <GenericTable 
         modelKey="teachers"
         data={teachers}
